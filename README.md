@@ -4,7 +4,7 @@ Amon2::Setup::Flavor::ModelResource -
 
 # SYNOPSIS
 
-amon2-setup.pl  Test --flavor=Basic,ModelResource
+amon2-setup.pl  Hoge --flavor=Basic,ModelResource
 
 # DESCRIPTION
 
