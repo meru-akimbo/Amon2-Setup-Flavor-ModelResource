@@ -7,14 +7,35 @@ use parent qw/ Amon2::Setup::Flavor /;
 
 our $VERSION = "0.01";
 
-
 sub run {
     my $self = shift;
 
+    $self->_write_myapp;
     $self->_write_loader;
-    $self->_write_web;
+    $self->_write_dispatcher;
     $self->_write_model;
     $self->_write_resource;
+}
+
+sub _write_myapp {
+    my ($self) = @_;
+
+    $self->write_file("lib/<<PATH>>.pm", <<'...');
+package <% $module %>;
+use strict;
+use warnings;
+use utf8;
+
+our $VERSION='0.01';
+use 5.008001;
+
+use parent qw/Amon2/;
+# Enable project local mode.
+__PACKAGE__->make_local_context();
+
+1;
+...
+
 }
 
 
@@ -50,64 +71,18 @@ sub _load_class {
 
 }
 
-sub _write_web {
+sub _write_dispatcher {
     my ($self) = @_;
 
-    $self->write_file("lib/<<PATH>>/Web.pm", <<'...');
+    $self->write_file("lib/<<PATH>>/Web/Dispatcher.pm", <<'...');
 package <% $module %>::Web;
 use strict;
 use warnings;
 use utf8;
 use parent qw/<% $module %> Amon2::Web/;
 use <% $module %>::Loader qw/model resource/;
-use File::Spec;
-# dispatcher
 use <% $module %>::Web::Dispatcher;
-sub dispatch {
-    return (<% $module %>::Web::Dispatcher->dispatch($_[0]) or die "response is not generated");
-}
-# load plugins
-__PACKAGE__->load_plugins(
-    'Web::FillInFormLite',
-    'Web::JSON',
-    '+<% $module %>::Web::Plugin::Session',
-);
-# setup view
-use <% $module %>::Web::View;
-{
-    sub create_view {
-        my $view = <% $module %>::Web::View->make_instance(__PACKAGE__);
-        no warnings 'redefine';
-        *<% $module %>::Web::create_view = sub { $view }; # Class cache.
-        $view
-    }
-    sub auto_render {
-        my $self = shift;
-        my @args;
-        (caller 1)[3] =~ /^<% $module %>::Web::([^:]+)::C::(.+)/;
 
-        my @path = (lc $1, lc $2);
-        $path[1] =~ s!::!/!g;
-        my $file_path = join '/', @path;
-        my @arg = @_;
-        $arg[0]->{js_path}  = $file_path . '.js';
-        $arg[0]->{css_path} = $file_path . '.css';
-        @args = ($file_path . '.tx', @arg);
-        $self->render(@args);
-    }
-}
-# for your security
-__PACKAGE__->add_trigger(
-    AFTER_DISPATCH => sub {
-        my ( $c, $res ) = @_;
-        # http://blogs.msdn.com/b/ie/archive/2008/07/02/ie8-security-part-v-comprehensive-protection.aspx
-        $res->header( 'X-Content-Type-Options' => 'nosniff' );
-        # http://blog.mozilla.com/security/2010/09/08/x-frame-options/
-        $res->header( 'X-Frame-Options' => 'DENY' );
-        # Cache control.
-        $res->header( 'Cache-Control' => 'private' );
-    },
-);
 1;
 ...
 
@@ -137,11 +112,23 @@ use warnings;
 use utf8;
 
 use <% $module %>;
-use DBIx::Sunny;
+use <% $module %>::DB::Schema;
+use <% $module %>::DB;
+my $schema = <% $module %>::DB::Schema->instance;
 
 sub db {
-    return DBIx::Sunny->connect(%{<% $module %>->context->config->{DBI}});
+    my $conf = <% $module %>->context->config->{DBI}
+        or die "Missing configuration about DBI";
+    $c->{db} = <% $module %>::DB->new(
+        schema       => $schema,
+        connect_info => [@$conf],
+        # I suggest to enable following lines if you are using mysql.
+        # on_connect_do => [
+        #     'SET SESSION sql_mode=STRICT_TRANS_TABLES;',
+        # ],
+    );
 }
+
 
 1;
 ...
