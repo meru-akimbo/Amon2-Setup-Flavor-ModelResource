@@ -1,0 +1,6 @@
+name = "Amon2-Setup-Flavor-ModelResource"
+# badges = ["travis"]
+authority="cpan:MERU"
+
+module_maker="ModuleBuildTiny"
+
