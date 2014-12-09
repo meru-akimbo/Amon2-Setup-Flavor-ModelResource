@@ -1,14 +1,17 @@
 # NAME
 
-Amon2::Setup::Flavor::ModelResource - It's new $module
+Amon2::Setup::Flavor::ModelResource -
 
 # SYNOPSIS
 
-    use Amon2::Setup::Flavor::ModelResource;
+amon2-setup.pl  Test --flavor=Basic,ModelResource
 
 # DESCRIPTION
 
-Amon2::Setup::Flavor::ModelResource is ...
+Model and  Resouce are offered.
+
+- Model:   Business logic
+- Resouce: Outside data is acquired. Data base is operated here
 
 # LICENSE
 
