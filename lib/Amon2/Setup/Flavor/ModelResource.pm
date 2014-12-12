@@ -97,6 +97,17 @@ use strict;
 use warnings;
 use utf8;
 use <% $module %>::Loader qw/model resource/;
+
+sub chain_resource {
+    my ($pkg, $func, $alias) = @_;
+
+    $mehod = $alias if $alias;
+    my $caller = caller;
+
+    no strict 'refs';
+    *{"${caller}::$func"} = \&{"${pkg}::$func"};
+}
+
 1;
 ...
 
