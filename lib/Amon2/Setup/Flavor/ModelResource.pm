@@ -130,7 +130,7 @@ my $schema = <% $module %>::DB::Schema->instance;
 sub db {
     my $conf = <% $module %>->context->config->{DBI}
         or die "Missing configuration about DBI";
-    $c->{db} = <% $module %>::DB->new(
+    return <% $module %>::DB->new(
         schema       => $schema,
         connect_info => [@$conf],
         # I suggest to enable following lines if you are using mysql.
