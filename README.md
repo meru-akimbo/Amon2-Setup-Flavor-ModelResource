@@ -10,8 +10,8 @@ amon2-setup.pl  Hoge --flavor=Basic,ModelResource
 
 Model and  Resouce are offered.
 
-- Model:   Business logic
-- Resouce: Outside data is acquired. Data base is operated here
+- Model:   Business logic.
+- Resouce: Outside data is acquired. Data base is operated here. Only Model use it.
 
 # LICENSE
 
