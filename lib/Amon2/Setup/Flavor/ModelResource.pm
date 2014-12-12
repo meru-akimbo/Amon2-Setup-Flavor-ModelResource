@@ -80,7 +80,7 @@ use strict;
 use warnings;
 use utf8;
 use parent qw/<% $module %> Amon2::Web/;
-use <% $module %>::Loader qw/model resource/;
+use <% $module %>::Loader qw/model/;
 use <% $module %>::Web::Dispatcher;
 
 1;
