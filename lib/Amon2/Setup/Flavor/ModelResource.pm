@@ -101,11 +101,11 @@ use <% $module %>::Loader qw/model resource/;
 sub chain_resource {
     my ($pkg, $func, $alias) = @_;
 
-    $mehod = $alias if $alias;
+    $alias = $func unless $alias;
     my $caller = caller;
 
     no strict 'refs';
-    *{"${caller}::$func"} = \&{"${pkg}::$func"};
+    *{"${caller}::$alias"} = \&{"${pkg}::$func"};
 }
 
 1;
